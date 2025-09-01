@@ -19,8 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { Worker, DayOfWeek, Shift } from "@/lib/types";
 import { daysOfWeek } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 const scheduleSchema = z.object(
   daysOfWeek.reduce((acc, day) => {
@@ -89,108 +88,103 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                    <Input placeholder="e.g. John Smith" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Role</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select worker role" />
-                    </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                    <SelectItem value="Carer">Carer</SelectItem>
-                    <SelectItem value="Cook">Cook</SelectItem>
-                    <SelectItem value="Cleaner">Cleaner</SelectItem>
-                    <SelectItem value="Executive">Executive</SelectItem>
-                    <SelectItem value="Volunteer">Volunteer</SelectItem>
-                    </SelectContent>
-                </Select>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="pin"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>4-Digit PIN</FormLabel>
-                <FormControl>
-                    <Input type="password" placeholder="e.g. 1234" maxLength={4} {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 py-4">
+        <div className="space-y-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">Worker Details</CardTitle>
+                    <CardDescription>Edit the worker's personal information.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g. John Smith" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select worker role" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            <SelectItem value="Carer">Carer</SelectItem>
+                            <SelectItem value="Cook">Cook</SelectItem>
+                            <SelectItem value="Cleaner">Cleaner</SelectItem>
+                            <SelectItem value="Executive">Executive</SelectItem>
+                            <SelectItem value="Volunteer">Volunteer</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField
+                    control={form.control}
+                    name="pin"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>4-Digit PIN</FormLabel>
+                        <FormControl>
+                            <Input type="password" placeholder="e.g. 1234" maxLength={4} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">Weekly Schedule</CardTitle>
+                    <CardDescription>Assign a shift for each day of the week.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                    {daysOfWeek.map(day => (
+                        <FormField
+                            key={day}
+                            control={form.control}
+                            name={`schedule.${day}`}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{day}</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select shift" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Morning">Morning</SelectItem>
+                                            <SelectItem value="Afternoon">Afternoon</SelectItem>
+                                            <SelectItem value="Night">Night</SelectItem>
+                                            <SelectItem value="Off Day">Off Day</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    ))}
+                </CardContent>
+            </Card>
         </div>
-        
-         <Card>
-            <CardHeader>
-                <CardTitle className="text-lg">Weekly Schedule</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                {daysOfWeek.map(day => <TableHead key={day} className="min-w-[150px]">{day}</TableHead>)}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow>
-                                {daysOfWeek.map(day => (
-                                    <FormField
-                                        key={day}
-                                        control={form.control}
-                                        name={`schedule.${day}`}
-                                        render={({ field }) => (
-                                            <TableCell>
-                                                <FormItem>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select shift" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="Morning">Morning</SelectItem>
-                                                            <SelectItem value="Afternoon">Afternoon</SelectItem>
-                                                            <SelectItem value="Night">Night</SelectItem>
-                                                            <SelectItem value="Off Day">Off Day</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            </TableCell>
-                                        )}
-                                    />
-                                ))}
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </div>
-            </CardContent>
-        </Card>
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 pt-6">
             <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
             <Button type="submit">Save Changes</Button>
         </div>
@@ -198,5 +192,3 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
     </Form>
   );
 }
-
-    
