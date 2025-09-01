@@ -31,34 +31,7 @@ export const addWorker = async (worker: Omit<Worker, 'id'>): Promise<string> => 
     return docRef.id;
 };
 
-// This flag ensures we only clear data once per session.
-let hasClearedData = false;
-
-const clearAllData = async () => {
-    try {
-        console.log("Clearing all data from Firestore...");
-        const workersSnapshot = await getDocs(collection(db, 'workers'));
-        const attendanceSnapshot = await getDocs(collection(db, 'attendanceRecords'));
-
-        const batch = writeBatch(db);
-
-        workersSnapshot.forEach(doc => batch.delete(doc.ref));
-        attendanceSnapshot.forEach(doc => batch.delete(doc.ref));
-
-        await batch.commit();
-        console.log("All data cleared successfully.");
-    } catch (error) {
-        console.error("Error clearing data:", error);
-    }
-};
-
-
 export const getWorkers = async (): Promise<Worker[]> => {
-    // Clear old data on first load to ensure a clean slate.
-    if (!hasClearedData) {
-        await clearAllData();
-        hasClearedData = true;
-    }
     const q = query(collection(db, 'workers'), orderBy('name'));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Worker));
