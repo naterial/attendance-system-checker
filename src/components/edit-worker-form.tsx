@@ -16,19 +16,28 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Worker } from "@/lib/types";
+import type { Worker, DayOfWeek, Shift } from "@/lib/types";
+import { daysOfWeek } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
+const scheduleSchema = z.object(
+  daysOfWeek.reduce((acc, day) => {
+    acc[day] = z.enum(["Morning", "Afternoon", "Night", "Off Day"], { required_error: `Please select a shift for ${day}.`});
+    return acc;
+  }, {} as Record<DayOfWeek, z.ZodEnum<["Morning", "Afternoon", "Night", "Off Day"]>>)
+);
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters.").max(50),
   role: z.enum(["Carer", "Cook", "Cleaner", "Executive", "Volunteer"], {
     required_error: "Please select a role.",
   }),
-  shift: z.enum(["Morning", "Afternoon", "Off Day"], {
-    required_error: "Please select a shift.",
-  }),
   pin: z.string().length(4, "PIN must be exactly 4 digits.").regex(/^\d{4}$/, "PIN must be numeric."),
+  schedule: scheduleSchema,
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -46,8 +55,16 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
     defaultValues: {
       name: worker.name,
       role: worker.role,
-      shift: worker.shift,
       pin: worker.pin,
+      schedule: worker.schedule || {
+        Monday: "Morning",
+        Tuesday: "Morning",
+        Wednesday: "Morning",
+        Thursday: "Morning",
+        Friday: "Morning",
+        Saturday: "Off Day",
+        Sunday: "Off Day",
+      },
     },
   });
 
@@ -112,28 +129,6 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
         />
         <FormField
           control={form.control}
-          name="shift"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Shift</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select worker shift" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="Morning">Morning</SelectItem>
-                  <SelectItem value="Afternoon">Afternoon</SelectItem>
-                  <SelectItem value="Off Day">Off Day</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="pin"
           render={({ field }) => (
             <FormItem>
@@ -145,6 +140,55 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
             </FormItem>
           )}
         />
+         <Card>
+            <CardHeader>
+                <CardTitle className="text-lg">Weekly Schedule</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Day</TableHead>
+                            <TableHead>Shift</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {daysOfWeek.map(day => (
+                            <FormField
+                                key={day}
+                                control={form.control}
+                                name={`schedule.${day}`}
+                                render={({ field }) => (
+                                    <TableRow>
+                                        <TableCell>
+                                            <FormLabel>{day}</FormLabel>
+                                        </TableCell>
+                                        <TableCell>
+                                            <FormItem>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select shift" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Morning">Morning</SelectItem>
+                                                        <SelectItem value="Afternoon">Afternoon</SelectItem>
+                                                        <SelectItem value="Night">Night</SelectItem>
+                                                        <SelectItem value="Off Day">Off Day</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            />
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
         <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
             <Button type="submit">Save Changes</Button>

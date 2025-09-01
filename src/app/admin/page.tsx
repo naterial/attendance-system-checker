@@ -7,7 +7,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { Worker, AttendanceRecord } from '@/lib/types';
+import type { Worker, AttendanceRecord, DayOfWeek, Shift } from '@/lib/types';
+import { daysOfWeek } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,6 +26,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+
+const ShiftBadge = ({ shift }: { shift: Shift }) => {
+    const shiftColors: Record<Shift, string> = {
+        Morning: 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300',
+        Afternoon: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300',
+        Night: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300',
+        'Off Day': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+    };
+    return <Badge className={cn('font-normal', shiftColors[shift])}>{shift}</Badge>;
+}
 
 export default function AdminPage() {
     const router = useRouter();
@@ -47,10 +59,15 @@ export default function AdminPage() {
             router.push('/admin/login');
         } else {
             setIsAuthenticated(true);
-            fetchData();
         }
     }, [router]);
     
+    useEffect(() => {
+        if(isAuthenticated) {
+            fetchData();
+        }
+    }, [isAuthenticated]);
+
     const fetchData = async () => {
         setIsLoading(true);
         try {
@@ -319,7 +336,7 @@ export default function AdminPage() {
                     <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div>
                             <CardTitle>Worker Management</CardTitle>
-                            <CardDescription>Add, view, and manage worker details.</CardDescription>
+                            <CardDescription>Add, view, and manage worker details and schedules.</CardDescription>
                         </div>
                         <Dialog open={isAddWorkerOpen} onOpenChange={setAddWorkerOpen}>
                             <DialogTrigger asChild>
@@ -328,7 +345,7 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="max-w-2xl">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
@@ -338,57 +355,63 @@ export default function AdminPage() {
                     </CardHeader>
                     <CardContent>
                         {workers.length > 0 ? (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead className="hidden md:table-cell">Role</TableHead>
-                                        <TableHead className="hidden md:table-cell">Shift</TableHead>
-                                        <TableHead>PIN</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {workers.map((worker) => (
-                                        <TableRow key={worker.id}>
-                                            <TableCell className="font-medium">{worker.name}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{worker.role}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{worker.shift}</TableCell>
-                                            <TableCell>****</TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button variant="outline" size="icon" onClick={() => setEditingWorker(worker)}>
-                                                        <Edit className="h-4 w-4" />
-                                                        <span className="sr-only">Edit</span>
-                                                    </Button>
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button variant="destructive" size="icon">
-                                                                <Trash2 className="h-4 w-4" />
-                                                                <span className="sr-only">Delete</span>
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                                <AlertDialogDescription>
-                                                                    This action cannot be undone. This will permanently delete the worker.
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={() => handleDeleteWorker(worker.id)}>
-                                                                    Delete
-                                                                </AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </div>
-                                            </TableCell>
+                             <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="sticky left-0 bg-card z-10">Name</TableHead>
+                                            <TableHead>Role</TableHead>
+                                            {daysOfWeek.map(day => (
+                                                <TableHead key={day}>{day.substring(0,3)}</TableHead>
+                                            ))}
+                                            <TableHead className="text-right sticky right-0 bg-card z-10">Actions</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {workers.map((worker) => (
+                                            <TableRow key={worker.id}>
+                                                <TableCell className="font-medium sticky left-0 bg-card z-10">{worker.name}</TableCell>
+                                                <TableCell>{worker.role}</TableCell>
+                                                {daysOfWeek.map(day => (
+                                                    <TableCell key={day}>
+                                                        {worker.schedule ? <ShiftBadge shift={worker.schedule[day]} /> : '-'}
+                                                    </TableCell>
+                                                ))}
+                                                <TableCell className="text-right sticky right-0 bg-card z-10">
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button variant="outline" size="icon" onClick={() => setEditingWorker(worker)}>
+                                                            <Edit className="h-4 w-4" />
+                                                            <span className="sr-only">Edit</span>
+                                                        </Button>
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button variant="destructive" size="icon">
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                    <span className="sr-only">Delete</span>
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        This action cannot be undone. This will permanently delete the worker.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleDeleteWorker(worker.id)}>
+                                                                        Delete
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
                         ) : (
                              <div className="text-center py-20 border-2 border-dashed rounded-lg bg-muted/50">
                                 <div className="flex justify-center mb-4">
@@ -406,7 +429,7 @@ export default function AdminPage() {
 
             {editingWorker && (
                  <Dialog open={!!editingWorker} onOpenChange={(isOpen) => !isOpen && setEditingWorker(null)}>
-                    <DialogContent>
+                    <DialogContent className="max-w-2xl">
                         <DialogHeader>
                             <DialogTitle>Edit Worker Details</DialogTitle>
                         </DialogHeader>
@@ -467,7 +490,7 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
                     <TableRow key={record.id}>
                         <TableCell>
                             <div className="font-medium">{record.name}</div>
-                            <div className="text-sm text-muted-foreground">{record.role} - {record.shift}</div>
+                            <div className="text-sm text-muted-foreground">{record.role} - <ShiftBadge shift={record.shift} /></div>
                         </TableCell>
                         <TableCell>{format(record.timestamp, 'p')}</TableCell>
                         <TableCell className="hidden md:table-cell max-w-xs truncate">{record.notes}</TableCell>

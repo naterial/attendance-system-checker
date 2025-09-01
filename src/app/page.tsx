@@ -4,39 +4,59 @@
 import { useState, useEffect } from "react";
 import Link from 'next/link';
 import { AttendanceCard } from "@/components/attendance-card";
-import type { AttendanceRecord } from "@/lib/types";
+import type { AttendanceRecord, DayOfWeek, Worker } from "@/lib/types";
 import { User, LogIn, ShieldCheck, Loader2, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format, parse } from "date-fns";
 import { onSnapshot, collection, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { getWorkers } from "@/lib/firestore";
 
 export default function Home() {
-  const [records, setRecords] = useState<AttendanceRecord[]>([]);
+  const [allRecords, setAllRecords] = useState<AttendanceRecord[]>([]);
+  const [workers, setWorkers] = useState<Worker[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true);
-    const q = query(collection(db, "attendanceRecords"), orderBy("timestamp", "desc"));
-    
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const fetchedRecords = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                ...data,
-                timestamp: (data.timestamp as any).toDate()
-            } as AttendanceRecord;
-        });
-        setRecords(fetchedRecords);
-        setIsLoading(false);
-    }, (error) => {
-        console.error("Error fetching real-time records:", error);
-        setIsLoading(false);
-    });
+    async function fetchInitialData() {
+      setIsLoading(true);
+      try {
+        const workersData = await getWorkers();
+        setWorkers(workersData);
 
-    return () => unsubscribe();
+        const q = query(collection(db, "attendanceRecords"), orderBy("timestamp", "desc"));
+        
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const fetchedRecords = querySnapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    timestamp: (data.timestamp as any).toDate()
+                } as AttendanceRecord;
+            });
+            setAllRecords(fetchedRecords);
+            setIsLoading(false);
+        }, (error) => {
+            console.error("Error fetching real-time records:", error);
+            setIsLoading(false);
+        });
+
+        return () => unsubscribe();
+      } catch (error) {
+        console.error("Error fetching workers:", error);
+        setIsLoading(false);
+      }
+    }
+    
+    fetchInitialData();
   }, []);
+
+  const today = format(new Date(), 'EEEE') as DayOfWeek;
+  const workersOnShiftToday = workers.filter(w => w.schedule && w.schedule[today] && w.schedule[today] !== 'Off Day');
+  const workerIdsOnShiftToday = new Set(workersOnShiftToday.map(w => w.id));
+
+  const records = allRecords.filter(r => workerIdsOnShiftToday.has(r.workerId));
   
   const groupedRecords = records.reduce((acc, record) => {
       const dayKey = format(record.timestamp, 'yyyy-MM-dd');
@@ -69,6 +89,9 @@ export default function Home() {
           <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
             A central place for team members to log their daily attendance.
           </p>
+           <p className="mt-4 font-semibold text-lg">
+            Showing today's roster for: {format(new Date(), "eeee, MMMM d")}
+          </p>
         </header>
 
         <div className="text-center mb-10 md:mb-12">
@@ -83,7 +106,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
            <div className="flex items-center justify-between mb-6">
              <h2 className="text-2xl md:text-3xl font-bold font-headline">Attendance Log</h2>
-             <span className="text-sm font-medium bg-muted text-muted-foreground rounded-full px-3 py-1">{records.length} Total</span>
+             <span className="text-sm font-medium bg-muted text-muted-foreground rounded-full px-3 py-1">{records.length} Total Today</span>
            </div>
           {isLoading ? (
              <div className="flex justify-center py-20">
@@ -114,8 +137,8 @@ export default function Home() {
                       <User className="w-8 h-8"/>
                   </div>
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold text-foreground/80">No attendance records yet.</h3>
-                <p className="text-sm text-muted-foreground mt-1 px-2">Workers can mark their attendance to get started.</p>
+                <h3 className="text-lg md:text-xl font-semibold text-foreground/80">No attendance records for today's roster.</h3>
+                <p className="text-sm text-muted-foreground mt-1 px-2">Workers scheduled for today can mark their attendance.</p>
             </div>
           )}
         </div>
@@ -123,5 +146,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

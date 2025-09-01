@@ -4,12 +4,13 @@
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { AttendancePinForm } from "@/components/attendance-pin-form";
-import type { AttendanceRecord } from "@/lib/types";
+import type { AttendanceRecord, DayOfWeek } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addAttendanceRecord, getWorkerByPin } from "@/lib/firestore";
 import { Loader2 } from "lucide-react";
+import { format } from "date-fns";
 
 export default function AttendancePage() {
   const router = useRouter();
@@ -26,13 +27,22 @@ export default function AttendancePage() {
             setIsLoading(false);
             return;
         }
+
+        const today = format(new Date(), 'EEEE') as DayOfWeek;
+        const scheduledShift = worker.schedule?.[today];
+
+        if (!scheduledShift || scheduledShift === 'Off Day') {
+             toast({ variant: "destructive", title: "Not Scheduled", description: "You are not scheduled to work today." });
+             setIsLoading(false);
+             return;
+        }
         
         const newRecord: Omit<AttendanceRecord, 'id'> = {
           timestamp: new Date(),
           workerId: worker.id,
           name: worker.name,
           role: worker.role,
-          shift: worker.shift,
+          shift: scheduledShift,
           notes: data.notes || '',
           status: 'pending'
         };
@@ -73,5 +83,3 @@ export default function AttendancePage() {
     </div>
   );
 }
-
-    

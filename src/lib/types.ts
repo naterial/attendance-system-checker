@@ -1,14 +1,19 @@
 import { z } from 'zod';
 
 export type WorkerRole = 'Carer' | 'Cook' | 'Cleaner' | 'Executive' | 'Volunteer';
-export type Shift = 'Morning' | 'Afternoon' | 'Off Day';
+export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+export type Shift = 'Morning' | 'Afternoon' | 'Night' | 'Off Day';
 export type AttendanceStatus = 'pending' | 'approved' | 'rejected';
+
+export const daysOfWeek: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+export type Schedule = Record<DayOfWeek, Shift>;
 
 export interface Worker {
   id: string;
   name: string;
   role: WorkerRole;
-  shift: Shift;
+  schedule: Schedule;
   pin: string; // 4-digit PIN
 }
 

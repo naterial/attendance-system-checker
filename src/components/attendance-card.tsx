@@ -1,5 +1,5 @@
-import { HandHeart, Soup, Sparkles, Briefcase, Users, Clock, Hourglass, ThumbsUp, ThumbsDown } from 'lucide-react';
-import type { AttendanceRecord, WorkerRole, AttendanceStatus } from '@/lib/types';
+import { HandHeart, Soup, Sparkles, Briefcase, Users, Clock, Hourglass, ThumbsUp, ThumbsDown, Moon, Sun, Coffee } from 'lucide-react';
+import type { AttendanceRecord, WorkerRole, AttendanceStatus, Shift } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -12,6 +12,13 @@ const roleIcons: Record<WorkerRole, React.ReactElement> = {
   'Executive': <Briefcase className="size-6 text-primary" />,
   'Volunteer': <Users className="size-6 text-primary" />,
 };
+
+const shiftIcons: Record<Shift, React.ReactElement> = {
+    'Morning': <Sun className="size-4 mr-1.5" />,
+    'Afternoon': <Coffee className="size-4 mr-1.5" />,
+    'Night': <Moon className="size-4 mr-1.5" />,
+    'Off Day': <></>
+}
 
 const statusConfig: Record<AttendanceStatus, { icon: React.ReactElement, text: string, className: string }> = {
     pending: {
@@ -41,7 +48,9 @@ export function AttendanceCard({ record }: { record: AttendanceRecord }) {
           <CardTitle className="text-xl font-headline">{record.name}</CardTitle>
           <CardDescription className="flex flex-wrap gap-2 items-center">
             <Badge variant="outline">{record.role}</Badge>
-            <Badge variant="secondary">{record.shift}</Badge>
+            <Badge variant="secondary" className="flex items-center">
+                {shiftIcons[record.shift]} {record.shift}
+            </Badge>
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="size-3" />
                 {format(record.timestamp, "PPP p")}
