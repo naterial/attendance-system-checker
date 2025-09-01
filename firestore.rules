@@ -1,18 +1,31 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Allow public read and create access for attendance records.
-    // This allows the homepage to display the log and users to sign in.
-    match /attendanceRecords/{recordId} {
-      allow read, create: if true;
+    // Rules for the 'workers' collection
+    match /workers/{workerId} {
+      // Allow anyone to read the list of workers (e.g., for PIN lookup)
+      allow read: if true;
+      
+      // Only allow authenticated users (admins) to create, update, or delete workers.
+      // In a real production app, you would check for an admin role claim.
+      allow write: if request.auth != null;
     }
 
-    // Secure all other collections by default.
-    // This prevents unauthorized access to worker data and configuration.
-    match /{document=**} {
-      allow read, write: if false;
+    // Rules for the 'attendanceRecords' collection
+    match /attendanceRecords/{recordId} {
+      // Allow anyone to read attendance records for the homepage log.
+      allow read: if true;
+
+      // Allow anyone to create a new attendance record (submitting attendance).
+      allow create: if true;
+
+      // Only allow authenticated users (admins) to update records (e.g., changing status).
+      // In a real production app, you would check for an admin role claim.
+      allow update: if request.auth != null;
+
+      // Prevent deletion of attendance records for data integrity.
+      allow delete: if false;
     }
   }
 }
