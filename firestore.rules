@@ -1,32 +1,18 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Rules for the 'workers' collection
+    // Rules for the workers collection
     match /workers/{workerId} {
-      // Anyone can read worker data (e.g., to check PINs)
-      allow read: if true;
-      
-      // Anyone can create a new worker (for the admin page)
-      allow create: if true;
-      
-      // Nobody can update or delete for now
-      allow update, delete: if false;
+      // Allow full create, read, update, and delete access for workers.
+      // This allows the admin to manage the worker list.
+      allow read, write: if true;
     }
 
-    // Rules for the 'attendanceRecords' collection
+    // Rules for the attendanceRecords collection
     match /attendanceRecords/{recordId} {
-      // Anyone can read attendance records for the homepage log
-      allow read: if true;
-
-      // Anyone can create a new attendance record (worker sign-in)
-      allow create: if true;
-
-      // Only authenticated admins should be able to update status
-      // For now, let's keep this restricted until proper admin auth is in place.
-      allow update: if true; // Temporarily open for the admin approval feature
+      allow read, create, update: if true;
       
-      // Nobody can delete records
+      // Prevent deletion of attendance records to maintain a log.
       allow delete: if false;
     }
   }
