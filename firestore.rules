@@ -1,19 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Allow public read on workers for PIN checking, and allow anyone to write.
-    // In a production app, this should be locked down to authenticated admins.
-    match /workers/{workerId} {
-      allow read: if true;
-      allow write: if true; // Allows create, update, delete for now.
-    }
-    
-    // Allow public read for the log, but restrict writes
-    match /attendanceRecords/{recordId} {
-      allow read: if true;
-      allow create: if true; // Anyone can create a new attendance record
-      allow update: if true; // Temporarily allow anyone to approve/reject for prototype
+    // Allow all reads and writes to all collections
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
