@@ -27,6 +27,7 @@ import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ShiftBadge = ({ shift }: { shift: Shift }) => {
     const shiftColors: Record<Shift, string> = {
@@ -345,11 +346,13 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-4xl">
+                            <DialogContent className="max-w-4xl max-h-[90vh]">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
-                                <AddWorkerForm onSubmit={handleAddWorker} workers={workers} />
+                                <ScrollArea className="pr-6 -mr-6">
+                                   <AddWorkerForm onSubmit={handleAddWorker} workers={workers} />
+                                </ScrollArea>
                             </DialogContent>
                         </Dialog>
                     </CardHeader>
@@ -431,16 +434,18 @@ export default function AdminPage() {
 
             {editingWorker && (
                  <Dialog open={!!editingWorker} onOpenChange={(isOpen) => !isOpen && setEditingWorker(null)}>
-                    <DialogContent className="max-w-4xl">
+                    <DialogContent className="max-w-4xl max-h-[90vh]">
                         <DialogHeader>
                             <DialogTitle>Edit Worker Details</DialogTitle>
                         </DialogHeader>
-                        <EditWorkerForm
-                            worker={editingWorker}
-                            workers={workers}
-                            onSubmit={handleUpdateWorker}
-                            onCancel={() => setEditingWorker(null)}
-                         />
+                        <ScrollArea className="pr-6 -mr-6">
+                            <EditWorkerForm
+                                worker={editingWorker}
+                                workers={workers}
+                                onSubmit={handleUpdateWorker}
+                                onCancel={() => setEditingWorker(null)}
+                            />
+                        </ScrollArea>
                     </DialogContent>
                 </Dialog>
             )}
@@ -521,5 +526,3 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
         </div>
     );
 };
-
-    

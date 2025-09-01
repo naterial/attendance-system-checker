@@ -88,7 +88,7 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 py-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="space-y-4">
             <Card>
                 <CardHeader>
@@ -103,7 +103,7 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                         <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                            <Input placeholder="e.g. John Smith" {...field} />
+                            <Input placeholder="e.g. Jane Doe" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -154,7 +154,7 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                     <CardTitle className="text-lg">Weekly Schedule</CardTitle>
                     <CardDescription>Assign a shift for each day of the week.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                <CardContent className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
                     {daysOfWeek.map(day => (
                         <FormField
                             key={day}
