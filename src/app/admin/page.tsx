@@ -355,7 +355,7 @@ export default function AdminPage() {
                     </CardHeader>
                     <CardContent>
                         {workers.length > 0 ? (
-                             <div className="overflow-x-auto">
+                             <div className="overflow-x-auto relative">
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
@@ -365,7 +365,7 @@ export default function AdminPage() {
                                             {daysOfWeek.map(day => (
                                                 <TableHead key={day} className="min-w-[120px]">{day}</TableHead>
                                             ))}
-                                            <TableHead className="text-right sticky right-0 bg-card z-10">Actions</TableHead>
+                                            <TableHead className="text-right sticky right-0 bg-card z-10 min-w-[100px]">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -478,45 +478,47 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
     }
     
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Worker</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead className="hidden md:table-cell">Notes</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {records.map(record => (
-                    <TableRow key={record.id}>
-                        <TableCell>
-                            <div className="font-medium">{record.name}</div>
-                            <div className="text-sm text-muted-foreground">{record.role} - <ShiftBadge shift={record.shift} /></div>
-                        </TableCell>
-                        <TableCell>{format(record.timestamp, 'p')}</TableCell>
-                        <TableCell className="hidden md:table-cell max-w-xs truncate">{record.notes}</TableCell>
-                        <TableCell className="text-right">
-                           {record.status === 'pending' && onApproval && (
-                               <div className="flex justify-end gap-2">
-                                   <Button variant="outline" size="sm" onClick={() => onApproval(record.id, 'approved')}>
-                                       <ThumbsUp className="mr-2 h-4 w-4" /> Approve
-                                   </Button>
-                                   <Button variant="destructive" size="sm" onClick={() => onApproval(record.id, 'rejected')}>
-                                       <ThumbsDown className="mr-2 h-4 w-4" /> Reject
-                                   </Button>
-                               </div>
-                           )}
-                           {record.status !== 'pending' && (
-                               <span className={`text-sm font-semibold ${record.status === 'approved' ? 'text-green-600' : 'text-red-600'}`}>
-                                   {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                               </span>
-                           )}
-                        </TableCell>
+        <div className="overflow-x-auto">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Worker</TableHead>
+                        <TableHead>Time</TableHead>
+                        <TableHead className="hidden md:table-cell">Notes</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {records.map(record => (
+                        <TableRow key={record.id}>
+                            <TableCell>
+                                <div className="font-medium">{record.name}</div>
+                                <div className="text-sm text-muted-foreground">{record.role} - <ShiftBadge shift={record.shift} /></div>
+                            </TableCell>
+                            <TableCell>{format(record.timestamp, 'p')}</TableCell>
+                            <TableCell className="hidden md:table-cell max-w-xs truncate">{record.notes}</TableCell>
+                            <TableCell className="text-right">
+                               {record.status === 'pending' && onApproval && (
+                                   <div className="flex justify-end gap-2">
+                                       <Button variant="outline" size="sm" onClick={() => onApproval(record.id, 'approved')}>
+                                           <ThumbsUp className="mr-2 h-4 w-4" /> Approve
+                                       </Button>
+                                       <Button variant="destructive" size="sm" onClick={() => onApproval(record.id, 'rejected')}>
+                                           <ThumbsDown className="mr-2 h-4 w-4" /> Reject
+                                       </Button>
+                                   </div>
+                               )}
+                               {record.status !== 'pending' && (
+                                   <span className={`text-sm font-semibold ${record.status === 'approved' ? 'text-green-600' : 'text-red-600'}`}>
+                                       {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                   </span>
+                               )}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
     );
 };
 
