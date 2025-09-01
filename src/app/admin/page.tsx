@@ -41,7 +41,7 @@ const ShiftBadge = ({ shift }: { shift: Shift }) => {
 export default function AdminPage() {
     const router = useRouter();
     const { toast } = useToast();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [workers, setWorkers] = useState<Worker[]>([]);
     const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
     const [isAddWorkerOpen, setAddWorkerOpen] = useState(false);
@@ -234,7 +234,7 @@ export default function AdminPage() {
         doc.save(`approved-attendance-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     };
 
-    if (!isAuthenticated || isLoading) {
+    if (isAuthenticated === null || isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Loader2 className="w-12 h-12 animate-spin text-primary" />
@@ -345,7 +345,7 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
+                            <DialogContent className="max-w-4xl">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
@@ -361,6 +361,7 @@ export default function AdminPage() {
                                         <TableRow>
                                             <TableHead className="sticky left-0 bg-card z-10">Name</TableHead>
                                             <TableHead>Role</TableHead>
+                                            <TableHead>PIN</TableHead>
                                             {daysOfWeek.map(day => (
                                                 <TableHead key={day}>{day.substring(0,3)}</TableHead>
                                             ))}
@@ -372,6 +373,7 @@ export default function AdminPage() {
                                             <TableRow key={worker.id}>
                                                 <TableCell className="font-medium sticky left-0 bg-card z-10">{worker.name}</TableCell>
                                                 <TableCell>{worker.role}</TableCell>
+                                                <TableCell>****</TableCell>
                                                 {daysOfWeek.map(day => (
                                                     <TableCell key={day}>
                                                         {worker.schedule ? <ShiftBadge shift={worker.schedule[day]} /> : '-'}
@@ -429,7 +431,7 @@ export default function AdminPage() {
 
             {editingWorker && (
                  <Dialog open={!!editingWorker} onOpenChange={(isOpen) => !isOpen && setEditingWorker(null)}>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="max-w-4xl">
                         <DialogHeader>
                             <DialogTitle>Edit Worker Details</DialogTitle>
                         </DialogHeader>
