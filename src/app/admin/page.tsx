@@ -346,13 +346,13 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-4xl max-h-[90vh]">
+                            <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
-                                <ScrollArea className="pr-6 -mr-6">
+                                <div className="flex-grow overflow-hidden">
                                    <AddWorkerForm onSubmit={handleAddWorker} workers={workers} />
-                                </ScrollArea>
+                                </div>
                             </DialogContent>
                         </Dialog>
                     </CardHeader>
@@ -434,18 +434,18 @@ export default function AdminPage() {
 
             {editingWorker && (
                  <Dialog open={!!editingWorker} onOpenChange={(isOpen) => !isOpen && setEditingWorker(null)}>
-                    <DialogContent className="max-w-4xl max-h-[90vh]">
+                    <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
                         <DialogHeader>
                             <DialogTitle>Edit Worker Details</DialogTitle>
                         </DialogHeader>
-                        <ScrollArea className="pr-6 -mr-6">
+                        <div className="flex-grow overflow-hidden">
                             <EditWorkerForm
                                 worker={editingWorker}
                                 workers={workers}
                                 onSubmit={handleUpdateWorker}
                                 onCancel={() => setEditingWorker(null)}
                             />
-                        </ScrollArea>
+                        </div>
                     </DialogContent>
                 </Dialog>
             )}
