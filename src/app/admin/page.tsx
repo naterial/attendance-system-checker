@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils';
 export default function AdminPage() {
     const router = useRouter();
     const { toast } = useToast();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [workers, setWorkers] = useState<Worker[]>([]);
     const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
     const [isAddWorkerOpen, setAddWorkerOpen] = useState(false);
@@ -41,12 +42,13 @@ export default function AdminPage() {
 
 
     useEffect(() => {
-        const isAuthenticated = localStorage.getItem('isAdminAuthenticated');
-        if (isAuthenticated !== 'true') {
+        const authStatus = localStorage.getItem('isAdminAuthenticated');
+        if (authStatus !== 'true') {
             router.push('/admin/login');
-            return;
+        } else {
+            setIsAuthenticated(true);
+            fetchData();
         }
-        fetchData();
     }, [router]);
     
     const fetchData = async () => {
@@ -215,7 +217,7 @@ export default function AdminPage() {
         doc.save(`approved-attendance-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     };
 
-    if (isLoading) {
+    if (!isAuthenticated || isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Loader2 className="w-12 h-12 animate-spin text-primary" />
