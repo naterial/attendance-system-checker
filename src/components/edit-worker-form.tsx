@@ -152,7 +152,7 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                {daysOfWeek.map(day => <TableHead key={day}>{day}</TableHead>)}
+                                {daysOfWeek.map(day => <TableHead key={day} className="min-w-[150px]">{day}</TableHead>)}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -163,7 +163,7 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                                         control={form.control}
                                         name={`schedule.${day}`}
                                         render={({ field }) => (
-                                            <TableCell className="min-w-[150px]">
+                                            <TableCell>
                                                 <FormItem>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <FormControl>
@@ -198,3 +198,5 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
     </Form>
   );
 }
+
+    

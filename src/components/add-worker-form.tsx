@@ -150,7 +150,7 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                {daysOfWeek.map(day => <TableHead key={day}>{day}</TableHead>)}
+                                {daysOfWeek.map(day => <TableHead key={day} className="min-w-[150px]">{day}</TableHead>)}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -161,7 +161,7 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                                         control={form.control}
                                         name={`schedule.${day}`}
                                         render={({ field }) => (
-                                            <TableCell className="min-w-[150px]">
+                                            <TableCell>
                                                 <FormItem>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <FormControl>
@@ -194,3 +194,5 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
     </Form>
   );
 }
+
+    

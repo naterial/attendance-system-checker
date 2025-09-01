@@ -359,11 +359,11 @@ export default function AdminPage() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="sticky left-0 bg-card z-10">Name</TableHead>
+                                            <TableHead className="sticky left-0 bg-card z-10 min-w-[150px]">Name</TableHead>
                                             <TableHead>Role</TableHead>
                                             <TableHead>PIN</TableHead>
                                             {daysOfWeek.map(day => (
-                                                <TableHead key={day}>{day.substring(0,3)}</TableHead>
+                                                <TableHead key={day} className="min-w-[120px]">{day}</TableHead>
                                             ))}
                                             <TableHead className="text-right sticky right-0 bg-card z-10">Actions</TableHead>
                                         </TableRow>
@@ -519,3 +519,5 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
         </Table>
     );
 };
+
+    
