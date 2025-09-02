@@ -56,55 +56,58 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="flex flex-col h-full"
+        className="flex flex-col h-full overflow-hidden"
       >
-        <ScrollArea className="flex-grow p-1 pr-4">
-          <div className="space-y-6 py-2">
-            {/* Worker Name */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Worker Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter worker name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <div className="flex-grow min-h-0">
+            <ScrollArea className="h-full p-1 pr-6">
+            <div className="space-y-6 py-2">
+                {/* Worker Name */}
+                <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Worker Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="Enter worker name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
 
-            {/* Role */}
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                      <SelectTrigger>
-                          <SelectValue placeholder="Select worker role" />
-                      </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                      <SelectItem value="Carer">Carer</SelectItem>
-                      <SelectItem value="Cook">Cook</SelectItem>
-                      <SelectItem value="Cleaner">Cleaner</SelectItem>
-                      <SelectItem value="Executive">Executive</SelectItem>
-                      <SelectItem value="Volunteer">Volunteer</SelectItem>
-                      </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </ScrollArea>
+                {/* Role */}
+                <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select worker role" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                        <SelectItem value="Carer">Carer</SelectItem>
+                        <SelectItem value="Cook">Cook</SelectItem>
+                        <SelectItem value="Cleaner">Cleaner</SelectItem>
+                        <SelectItem value="Executive">Executive</SelectItem>
+                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
+            </ScrollArea>
+        </div>
+        
 
         {/* Sticky Buttons */}
-        <div className="pt-6 flex gap-4 justify-end border-t -mx-6 px-6 bg-background">
+        <div className="flex-shrink-0 pt-4 flex gap-4 justify-end border-t bg-background">
             <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
             <Button type="submit">
                 Add Worker
