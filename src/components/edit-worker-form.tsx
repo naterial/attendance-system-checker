@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -173,7 +174,7 @@ export default function EditWorkerForm({
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select shift" />
-                                                </Trigger>
+                                                </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="Morning">Morning</SelectItem>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -33,8 +34,10 @@ type WorkerFormData = z.infer<typeof WorkerSchema>;
 
 export default function AddWorkerForm({
   onSubmit,
+  onCancel,
 }: {
   onSubmit: (data: Omit<Worker, 'id' | 'pin' | 'schedule'>) => void;
+  onCancel: () => void;
 }) {
   const form = useForm<WorkerFormData>({
     resolver: zodResolver(WorkerSchema),
@@ -50,7 +53,6 @@ export default function AddWorkerForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col h-full relative"
       >
-        {/* Scrollable area */}
         <ScrollArea className="flex-grow pr-6 -mr-6">
           <div className="space-y-6 pb-20">
             {/* Worker Name */}
@@ -96,11 +98,12 @@ export default function AddWorkerForm({
           </div>
         </ScrollArea>
 
-        {/* Sticky Add Worker Button */}
-        <div className="sticky bottom-0 bg-card p-4 border-t">
-          <Button type="submit" className="w-full">
-            Add Worker
-          </Button>
+        {/* Sticky Buttons */}
+        <div className="sticky bottom-0 bg-card p-4 border-t flex gap-4">
+            <Button type="button" variant="outline" onClick={onCancel} className="w-full">Cancel</Button>
+            <Button type="submit" className="w-full">
+                Add Worker
+            </Button>
         </div>
       </form>
     </ShadcnForm>

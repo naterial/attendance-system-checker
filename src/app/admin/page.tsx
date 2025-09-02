@@ -7,9 +7,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { Worker, AttendanceRecord, DayOfWeek, Shift } from '@/lib/types';
-import { daysOfWeek } from '@/lib/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import type { Worker, AttendanceRecord, Shift } from '@/lib/types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AddWorkerForm from '@/components/add-worker-form';
@@ -27,7 +26,6 @@ import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ShiftBadge = ({ shift }: { shift: Shift }) => {
     const shiftColors: Record<Shift, string> = {
@@ -367,7 +365,10 @@ export default function AdminPage() {
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
-                                <AddWorkerForm onSubmit={handleAddWorker} />
+                                <AddWorkerForm 
+                                    onSubmit={handleAddWorker} 
+                                    onCancel={() => setAddWorkerOpen(false)} 
+                                />
                             </DialogContent>
                         </Dialog>
                     </CardHeader>
