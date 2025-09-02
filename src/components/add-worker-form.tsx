@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Form as ShadcnForm,
+  Form,
   FormField,
   FormItem,
   FormLabel,
@@ -32,13 +32,12 @@ const WorkerSchema = z.object({
 
 type WorkerFormData = z.infer<typeof WorkerSchema>;
 
-export default function AddWorkerForm({
-  onSubmit,
-  onCancel,
-}: {
+interface AddWorkerFormProps {
   onSubmit: (data: Omit<Worker, 'id' | 'pin' | 'schedule'>) => void;
   onCancel: () => void;
-}) {
+}
+
+export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps) {
   const form = useForm<WorkerFormData>({
     resolver: zodResolver(WorkerSchema),
     defaultValues: {
@@ -47,14 +46,20 @@ export default function AddWorkerForm({
     },
   });
 
+  const handleFormSubmit = (data: WorkerFormData) => {
+    onSubmit(data);
+    form.reset();
+  };
+
+
   return (
-    <ShadcnForm {...form}>
+    <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col h-full relative"
+        onSubmit={form.handleSubmit(handleFormSubmit)}
+        className="flex flex-col h-full"
       >
-        <ScrollArea className="flex-grow pr-6 -mr-6">
-          <div className="space-y-6 pb-20">
+        <ScrollArea className="flex-grow p-1 -mr-4 pr-4">
+          <div className="space-y-6 py-2">
             {/* Worker Name */}
             <FormField
               control={form.control}
@@ -99,13 +104,15 @@ export default function AddWorkerForm({
         </ScrollArea>
 
         {/* Sticky Buttons */}
-        <div className="sticky bottom-0 bg-card p-4 border-t flex gap-4">
-            <Button type="button" variant="outline" onClick={onCancel} className="w-full">Cancel</Button>
-            <Button type="submit" className="w-full">
+        <div className="pt-6 flex gap-4 justify-end border-t">
+            <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
+            <Button type="submit">
                 Add Worker
             </Button>
         </div>
       </form>
-    </ShadcnForm>
+    </Form>
   );
 }
+
+    

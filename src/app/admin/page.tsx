@@ -529,3 +529,4 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
         </div>
     );
 };
+
