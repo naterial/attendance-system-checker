@@ -15,7 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import type { Worker } from "@/lib/types";
+import { getWorkers } from "@/lib/firestore";
 import {
   Select,
   SelectContent,
@@ -41,6 +43,7 @@ const WorkerSchema = z.object({
   role: z.enum(["Carer", "Cook", "Cleaner", "Executive", "Volunteer"], {
     required_error: "Please select a role.",
   }),
+  pin: z.string().length(4, "PIN must be 4 digits.").regex(/^\d{4}$/, "PIN must be numeric."),
   schedule: scheduleSchema,
 });
 
@@ -54,21 +57,39 @@ const defaultSchedule = daysOfWeek.reduce((acc, day) => {
 
 
 interface AddWorkerFormProps {
-  onSubmit: (data: Omit<Worker, 'id' | 'pin'>) => void;
+  onSubmit: (data: Omit<Worker, 'id'>) => void;
   onCancel: () => void;
 }
 
 export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps) {
+  const { toast } = useToast();
   const form = useForm<WorkerFormData>({
     resolver: zodResolver(WorkerSchema),
     defaultValues: {
       name: "",
       role: "Carer",
+      pin: "",
       schedule: defaultSchedule,
     },
   });
 
-  const handleFormSubmit = (data: WorkerFormData) => {
+  const handleFormSubmit = async (data: WorkerFormData) => {
+    const workers = await getWorkers();
+    const isPinTaken = workers.some(w => w.pin === data.pin);
+    
+    if (isPinTaken) {
+        form.setError("pin", {
+            type: "manual",
+            message: "This PIN is already taken. Please choose another one.",
+        });
+        toast({
+            variant: "destructive",
+            title: "PIN Already Exists",
+            description: "Another worker is already using this PIN.",
+        });
+        return;
+    }
+
     onSubmit(data);
     form.reset();
   };
@@ -123,6 +144,20 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
                 )}
                 />
 
+                 <FormField
+                    control={form.control}
+                    name="pin"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>4-Digit PIN</FormLabel>
+                        <FormControl>
+                            <Input type="password" placeholder="e.g. 1234" maxLength={4} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Weekly Shift Schedule</CardTitle>
@@ -170,3 +205,4 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
     </Form>
   );
 }
+

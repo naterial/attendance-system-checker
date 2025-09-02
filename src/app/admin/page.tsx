@@ -84,16 +84,9 @@ export default function AdminPage() {
         }
     };
 
-    const handleAddWorker = async (newWorkerData: Omit<Worker, 'id' | 'pin'>) => {
+    const handleAddWorker = async (newWorkerData: Omit<Worker, 'id'>) => {
        try {
-            const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
-            
-            const workerToAdd = {
-                ...newWorkerData,
-                pin: randomPin,
-            }
-
-            await addWorker(workerToAdd);
+            await addWorker(newWorkerData);
             await fetchData();
             setAddWorkerOpen(false);
             toast({ title: "Success", description: "New worker has been added." });
@@ -370,6 +363,7 @@ export default function AdminPage() {
                                         <TableRow>
                                             <TableHead className="sticky left-0 bg-card z-10 min-w-[150px]">Name</TableHead>
                                             <TableHead>Role</TableHead>
+                                            <TableHead>PIN</TableHead>
                                             <TableHead className="text-right sticky right-0 bg-card z-10 min-w-[100px]">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -378,6 +372,7 @@ export default function AdminPage() {
                                             <TableRow key={worker.id}>
                                                 <TableCell className="font-medium sticky left-0 bg-card z-10">{worker.name}</TableCell>
                                                 <TableCell>{worker.role}</TableCell>
+                                                <TableCell>{worker.pin}</TableCell>
                                                 <TableCell className="text-right sticky right-0 bg-card z-10">
                                                     <div className="flex justify-end gap-2">
                                                         <Button variant="outline" size="icon" onClick={() => setEditingWorker(worker)}>
@@ -520,4 +515,3 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
     );
 };
 
-    
