@@ -95,7 +95,7 @@ export default function EditWorkerForm({
         className="flex flex-col h-full"
       >
         <ScrollArea className="flex-grow pr-6 -mr-6">
-          <div className="space-y-6 pb-20">
+          <div className="space-y-6 pb-4">
              <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Worker Details</CardTitle>
@@ -192,7 +192,7 @@ export default function EditWorkerForm({
           </div>
         </ScrollArea>
 
-        <div className="sticky bottom-0 bg-card p-4 border-t flex gap-4">
+        <div className="flex-shrink-0 pt-4 flex gap-4 justify-end border-t bg-background mt-auto">
           <Button type="button" variant="outline" onClick={onCancel} className="w-full">Cancel</Button>
           <Button type="submit" className="w-full">
             Save Changes
@@ -202,5 +202,3 @@ export default function EditWorkerForm({
     </Form>
   );
 }
-
-    

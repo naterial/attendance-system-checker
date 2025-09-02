@@ -41,5 +41,3 @@ export const SummarizeNotesOutputSchema = z.object({
   summary: z.string().describe('A concise summary of all the provided notes, highlighting key events, issues, and staff sentiment.'),
 });
 export type SummarizeNotesOutput = z.infer<typeof SummarizeNotesOutputSchema>;
-
-    
