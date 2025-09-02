@@ -346,7 +346,7 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-lg">
+                            <DialogContent className="max-w-3xl h-[90vh]">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
@@ -424,7 +424,7 @@ export default function AdminPage() {
 
             {editingWorker && (
                  <Dialog open={!!editingWorker} onOpenChange={(isOpen) => !isOpen && setEditingWorker(null)}>
-                    <DialogContent className="max-w-lg">
+                    <DialogContent className="max-w-3xl h-[90vh]">
                         <DialogHeader>
                             <DialogTitle>Edit Worker Details</DialogTitle>
                         </DialogHeader>

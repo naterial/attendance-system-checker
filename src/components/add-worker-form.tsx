@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { daysOfWeek, DayOfWeek } from "@/lib/types";
+import { getWorkers } from "@/lib/firestore";
 
 // Validation schema
 const scheduleSchema = z.object(
@@ -48,11 +49,10 @@ type WorkerFormData = z.infer<typeof workerSchema>;
 
 export default function AddWorkerForm({
   onSubmit,
-  workers,
 }: {
   onSubmit: (data: Omit<Worker, "id">) => void;
-  workers: Worker[];
 }) {
+  const { toast } = useToast();
   const form = useForm<WorkerFormData>({
     resolver: zodResolver(workerSchema),
     defaultValues: {
@@ -72,9 +72,8 @@ export default function AddWorkerForm({
     },
   });
 
-  const { toast } = useToast();
-
-  const handleSubmit = (data: WorkerFormData) => {
+  const handleSubmit = async (data: WorkerFormData) => {
+    const workers = await getWorkers();
     const isPinTaken = workers.some((w) => w.pin === data.pin);
     if (isPinTaken) {
       form.setError("pin", {
