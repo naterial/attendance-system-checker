@@ -86,9 +86,26 @@ export default function AdminPage() {
         }
     };
 
-    const handleAddWorker = async (newWorkerData: Omit<Worker, 'id'>) => {
+    const handleAddWorker = async (newWorkerData: Omit<Worker, 'id' | 'pin' | 'schedule'>) => {
        try {
-            await addWorker(newWorkerData);
+            const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
+            const defaultSchedule = {
+                Monday: 'Morning',
+                Tuesday: 'Morning',
+                Wednesday: 'Morning',
+                Thursday: 'Morning',
+                Friday: 'Morning',
+                Saturday: 'Off Day',
+                Sunday: 'Off Day',
+              };
+
+            const workerToAdd = {
+                ...newWorkerData,
+                pin: randomPin,
+                schedule: defaultSchedule
+            }
+
+            await addWorker(workerToAdd);
             await fetchData();
             setAddWorkerOpen(false);
             toast({ title: "Success", description: "New worker has been added." });
@@ -513,5 +530,3 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
         </div>
     );
 };
-
-    

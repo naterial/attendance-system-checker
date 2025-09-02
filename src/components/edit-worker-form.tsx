@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Form,
+  Form as ShadcnForm,
   FormField,
   FormItem,
   FormLabel,
@@ -90,7 +90,7 @@ export default function EditWorkerForm({
   }
 
   return (
-    <Form {...form}>
+    <ShadcnForm {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
         className="flex flex-col h-full"
@@ -213,6 +213,6 @@ export default function EditWorkerForm({
           </Button>
         </div>
       </form>
-    </Form>
+    </ShadcnForm>
   );
 }
