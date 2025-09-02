@@ -58,7 +58,7 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
         onSubmit={form.handleSubmit(handleFormSubmit)}
         className="flex flex-col h-full"
       >
-        <ScrollArea className="flex-grow p-1 -mr-4 pr-4">
+        <ScrollArea className="flex-grow p-1 pr-4">
           <div className="space-y-6 py-2">
             {/* Worker Name */}
             <FormField
@@ -104,7 +104,7 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
         </ScrollArea>
 
         {/* Sticky Buttons */}
-        <div className="pt-6 flex gap-4 justify-end border-t">
+        <div className="pt-6 flex gap-4 justify-end border-t -mx-6 px-6 bg-background">
             <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
             <Button type="submit">
                 Add Worker
@@ -114,5 +114,3 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
     </Form>
   );
 }
-
-    
