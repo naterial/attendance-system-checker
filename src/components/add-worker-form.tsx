@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import {
   Form as ShadcnForm,
   FormField,
@@ -15,12 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 // Validation schema
 const WorkerSchema = z.object({
   name: z.string().min(2, "Name is required"),
-  email: z.string().email("Invalid email"),
-  role: z.string().min(2, "Role is required"),
+  role: z.enum(["Carer", "Cook", "Cleaner", "Executive", "Volunteer"]),
 });
 
 type WorkerFormData = z.infer<typeof WorkerSchema>;
@@ -34,8 +33,7 @@ export default function AddWorkerForm({
     resolver: zodResolver(WorkerSchema),
     defaultValues: {
       name: "",
-      email: "",
-      role: "",
+      role: "Carer",
     },
   });
 
@@ -63,21 +61,6 @@ export default function AddWorkerForm({
               )}
             />
 
-            {/* Email */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter worker email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Role */}
             <FormField
               control={form.control}
@@ -85,9 +68,20 @@ export default function AddWorkerForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter worker role" {...field} />
-                  </FormControl>
+                   <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select worker role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Carer">Carer</SelectItem>
+                        <SelectItem value="Cook">Cook</SelectItem>
+                        <SelectItem value="Cleaner">Cleaner</SelectItem>
+                        <SelectItem value="Executive">Executive</SelectItem>
+                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                      </SelectContent>
+                    </Select>
                   <FormMessage />
                 </FormItem>
               )}

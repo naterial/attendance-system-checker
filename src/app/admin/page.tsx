@@ -363,7 +363,7 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-3xl h-[90vh]">
+                            <DialogContent className="max-w-md">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
@@ -378,7 +378,6 @@ export default function AdminPage() {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead className="sticky left-0 bg-card z-10 min-w-[150px]">Name</TableHead>
-                                            <TableHead>Email</TableHead>
                                             <TableHead>Role</TableHead>
                                             <TableHead className="text-right sticky right-0 bg-card z-10 min-w-[100px]">Actions</TableHead>
                                         </TableRow>
@@ -387,7 +386,6 @@ export default function AdminPage() {
                                         {workers.map((worker) => (
                                             <TableRow key={worker.id}>
                                                 <TableCell className="font-medium sticky left-0 bg-card z-10">{worker.name}</TableCell>
-                                                <TableCell>{(worker as any).email}</TableCell>
                                                 <TableCell>{worker.role}</TableCell>
                                                 <TableCell className="text-right sticky right-0 bg-card z-10">
                                                     <div className="flex justify-end gap-2">

@@ -37,7 +37,6 @@ const scheduleSchema = z.object(
 
 const workerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters.").max(50),
-  email: z.string().email("Invalid email address."),
   role: z.enum(["Carer", "Cook", "Cleaner", "Executive", "Volunteer"], {
     required_error: "Please select a role.",
   }),
@@ -61,7 +60,6 @@ export default function EditWorkerForm({
     resolver: zodResolver(workerSchema),
     defaultValues: {
       name: worker.name,
-      email: (worker as any).email || "",
       role: worker.role,
       pin: worker.pin,
       schedule: worker.schedule,
@@ -116,19 +114,7 @@ export default function EditWorkerForm({
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Email Address</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="e.g. j.smith@example.com" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        
                         <FormField
                             control={form.control}
                             name="role"
