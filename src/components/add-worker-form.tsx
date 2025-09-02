@@ -203,17 +203,17 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                         ))}
                     </CardContent>
                 </Card>
-                 <div className="pt-2">
-                    <Button type="submit" className="w-full" size="lg">Add Worker</Button>
-                </div>
             </div>
         </ScrollArea>
+        <div className="flex-shrink-0 pt-6 border-t">
+            <Button type="submit" className="w-full" size="lg">Add Worker</Button>
+        </div>
         {showScrollTop && (
             <Button
             type="button"
             size="icon"
             onClick={handleScrollTop}
-            className="absolute bottom-4 right-4 rounded-full shadow-lg"
+            className="absolute bottom-20 right-4 rounded-full shadow-lg"
             >
             <ArrowUp className="h-5 w-5" />
             </Button>
