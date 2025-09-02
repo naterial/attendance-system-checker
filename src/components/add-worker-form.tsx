@@ -1,9 +1,9 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useRef, useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,7 @@ import { daysOfWeek } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
+import { ArrowUp } from "lucide-react";
 
 const scheduleSchema = z.object(
   daysOfWeek.reduce((acc, day) => {
@@ -65,6 +66,25 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
     },
   });
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const scrollEl = scrollRef.current?.querySelector("[data-radix-scroll-area-viewport]");
+    if (scrollEl) {
+      const handler = () => {
+        setShowScrollTop(scrollEl.scrollTop > 100);
+      };
+      scrollEl.addEventListener("scroll", handler);
+      return () => scrollEl.removeEventListener("scroll", handler);
+    }
+  }, []);
+
+  const handleScrollTop = () => {
+    const scrollEl = scrollRef.current?.querySelector("[data-radix-scroll-area-viewport]");
+    if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSubmit = (data: FormValues) => {
     const isPinTaken = workers.some(w => w.pin === data.pin);
 
@@ -87,8 +107,8 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full">
-        <ScrollArea className="flex-grow pr-6 -mr-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full relative">
+        <ScrollArea ref={scrollRef} className="flex-grow pr-6 -mr-6">
             <div className="space-y-6 pb-6">
                 <Card>
                     <CardHeader>
@@ -167,7 +187,7 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select shift" />
-                                                </SelectTrigger>
+                                                </Trigger>
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="Morning">Morning</SelectItem>
@@ -183,12 +203,21 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                         ))}
                     </CardContent>
                 </Card>
+                 <div className="pt-2">
+                    <Button type="submit" className="w-full" size="lg">Add Worker</Button>
+                </div>
             </div>
         </ScrollArea>
-        
-        <div className="pt-6 flex-shrink-0">
-            <Button type="submit" className="w-full" size="lg">Add Worker</Button>
-        </div>
+        {showScrollTop && (
+            <Button
+            type="button"
+            size="icon"
+            onClick={handleScrollTop}
+            className="absolute bottom-4 right-4 rounded-full shadow-lg"
+            >
+            <ArrowUp className="h-5 w-5" />
+            </Button>
+        )}
       </form>
     </Form>
   );
