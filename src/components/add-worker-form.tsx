@@ -23,17 +23,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { daysOfWeek, shiftOptions } from "@/lib/types";
+
+// Create a schema for the schedule
+const scheduleSchema = z.object(
+  daysOfWeek.reduce((acc, day) => {
+    acc[day] = z.enum(["Morning", "Afternoon", "Evening", "Off Day"]);
+    return acc;
+  }, {} as Record<string, z.ZodEnum<["Morning", "Afternoon", "Evening", "Off Day"]>>)
+);
+
 
 // Validation schema
 const WorkerSchema = z.object({
   name: z.string().min(2, "Name is required"),
-  role: z.enum(["Carer", "Cook", "Cleaner", "Executive", "Volunteer"]),
+  role: z.enum(["Carer", "Cook", "Cleaner", "Executive", "Volunteer"], {
+    required_error: "Please select a role.",
+  }),
+  schedule: scheduleSchema,
 });
 
 type WorkerFormData = z.infer<typeof WorkerSchema>;
 
+// Generate default values for the schedule
+const defaultSchedule = daysOfWeek.reduce((acc, day) => {
+  acc[day] = 'Morning';
+  return acc;
+}, {} as Record<string, "Morning" | "Afternoon" | "Evening" | "Off Day">);
+
+
 interface AddWorkerFormProps {
-  onSubmit: (data: Omit<Worker, 'id' | 'pin' | 'schedule'>) => void;
+  onSubmit: (data: Omit<Worker, 'id' | 'pin'>) => void;
   onCancel: () => void;
 }
 
@@ -43,6 +64,7 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
     defaultValues: {
       name: "",
       role: "Carer",
+      schedule: defaultSchedule,
     },
   });
 
@@ -101,6 +123,40 @@ export default function AddWorkerForm({ onSubmit, onCancel }: AddWorkerFormProps
                     </FormItem>
                 )}
                 />
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">Weekly Shift Schedule</CardTitle>
+                        <CardDescription>Assign a shift for each day of the week.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {daysOfWeek.map((day) => (
+                           <FormField
+                           key={day}
+                           control={form.control}
+                           name={`schedule.${day}`}
+                           render={({ field }) => (
+                               <FormItem>
+                                   <FormLabel>{day}</FormLabel>
+                                   <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                       <FormControl>
+                                           <SelectTrigger>
+                                               <SelectValue placeholder="Select shift" />
+                                           </SelectTrigger>
+                                       </FormControl>
+                                       <SelectContent>
+                                           {shiftOptions.map((shift) => (
+                                                <SelectItem key={shift} value={shift}>{shift}</SelectItem>
+                                           ))}
+                                       </SelectContent>
+                                   </Select>
+                                   <FormMessage />
+                               </FormItem>
+                           )}
+                       />
+                        ))}
+                    </CardContent>
+                </Card>
             </div>
             </ScrollArea>
         </div>

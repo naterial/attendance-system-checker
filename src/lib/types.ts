@@ -2,10 +2,12 @@ import { z } from 'zod';
 
 export type WorkerRole = 'Carer' | 'Cook' | 'Cleaner' | 'Executive' | 'Volunteer';
 export type DayOfWeek = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
-export type Shift = 'Morning' | 'Afternoon' | 'Night' | 'Off Day';
+export type Shift = 'Morning' | 'Afternoon' | 'Evening' | 'Off Day';
 export type AttendanceStatus = 'pending' | 'approved' | 'rejected';
 
 export const daysOfWeek: DayOfWeek[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const shiftOptions: Shift[] = ['Morning', 'Afternoon', 'Evening', 'Off Day'];
+
 
 export type Schedule = Record<DayOfWeek, Shift>;
 

@@ -25,15 +25,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { daysOfWeek, DayOfWeek } from "@/lib/types";
+import { daysOfWeek, DayOfWeek, shiftOptions } from "@/lib/types";
 import { getWorkers } from "@/lib/firestore";
 
 // Validation schema
 const scheduleSchema = z.object(
   daysOfWeek.reduce((acc, day) => {
-    acc[day] = z.enum(["Morning", "Afternoon", "Night", "Off Day"], { required_error: `Please select a shift for ${day}.` });
+    acc[day] = z.enum(["Morning", "Afternoon", "Evening", "Off Day"], { required_error: `Please select a shift for ${day}.` });
     return acc;
-  }, {} as Record<DayOfWeek, z.ZodEnum<["Morning", "Afternoon", "Night", "Off Day"]>>)
+  }, {} as Record<DayOfWeek, z.ZodEnum<["Morning", "Afternoon", "Evening", "Off Day"]>>)
 );
 
 const workerSchema = z.object({
@@ -177,10 +177,9 @@ export default function EditWorkerForm({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="Morning">Morning</SelectItem>
-                                                <SelectItem value="Afternoon">Afternoon</SelectItem>
-                                                <SelectItem value="Night">Night</SelectItem>
-                                                <SelectItem value="Off Day">Off Day</SelectItem>
+                                                {shiftOptions.map((shift) => (
+                                                    <SelectItem key={shift} value={shift}>{shift}</SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />

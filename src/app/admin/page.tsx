@@ -32,7 +32,7 @@ const ShiftBadge = ({ shift }: { shift: Shift }) => {
     const shiftColors: Record<Shift, string> = {
         Morning: 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300',
         Afternoon: 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300',
-        Night: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300',
+        Evening: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300',
         'Off Day': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
     };
     return <Badge className={cn('font-normal', shiftColors[shift])}>{shift}</Badge>;
@@ -85,23 +85,13 @@ export default function AdminPage() {
         }
     };
 
-    const handleAddWorker = async (newWorkerData: Omit<Worker, 'id' | 'pin' | 'schedule'>) => {
+    const handleAddWorker = async (newWorkerData: Omit<Worker, 'id' | 'pin'>) => {
        try {
             const randomPin = Math.floor(1000 + Math.random() * 9000).toString();
-            const defaultSchedule = {
-                Monday: 'Morning',
-                Tuesday: 'Morning',
-                Wednesday: 'Morning',
-                Thursday: 'Morning',
-                Friday: 'Morning',
-                Saturday: 'Off Day',
-                Sunday: 'Off Day',
-              };
-
+            
             const workerToAdd = {
                 ...newWorkerData,
                 pin: randomPin,
-                schedule: defaultSchedule
             }
 
             await addWorker(workerToAdd);
@@ -362,7 +352,7 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-md h-[50vh]">
+                            <DialogContent className="max-w-xl h-[80vh]">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>

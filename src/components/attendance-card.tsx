@@ -1,4 +1,4 @@
-import { HandHeart, Soup, Sparkles, Briefcase, Users, Clock, Hourglass, ThumbsUp, ThumbsDown, Moon, Sun, Coffee } from 'lucide-react';
+import { HandHeart, Soup, Sparkles, Briefcase, Users, Clock, Hourglass, ThumbsUp, ThumbsDown, Moon, Sun, Coffee, Sunset } from 'lucide-react';
 import type { AttendanceRecord, WorkerRole, AttendanceStatus, Shift } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +16,7 @@ const roleIcons: Record<WorkerRole, React.ReactElement> = {
 const shiftIcons: Record<Shift, React.ReactElement> = {
     'Morning': <Sun className="size-4 mr-1.5" />,
     'Afternoon': <Coffee className="size-4 mr-1.5" />,
-    'Night': <Moon className="size-4 mr-1.5" />,
+    'Evening': <Sunset className="size-4 mr-1.5" />,
     'Off Day': <></>
 }
 
