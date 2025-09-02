@@ -92,111 +92,123 @@ export default function EditWorkerForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-col h-full"
+        className="flex flex-col h-full overflow-hidden"
       >
-        <ScrollArea className="flex-grow pr-6 -mr-6">
-          <div className="space-y-6 pb-4">
-             <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Worker Details</CardTitle>
-                        <CardDescription>Enter the worker's personal and security information.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Full Name</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="e.g. John Smith" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        
-                        <FormField
-                            control={form.control}
-                            name="role"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Role</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select worker role" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                    <SelectItem value="Carer">Carer</SelectItem>
-                                    <SelectItem value="Cook">Cook</SelectItem>
-                                    <SelectItem value="Cleaner">Cleaner</SelectItem>
-                                    <SelectItem value="Executive">Executive</SelectItem>
-                                    <SelectItem value="Volunteer">Volunteer</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="pin"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>4-Digit PIN</FormLabel>
-                                <FormControl>
-                                    <Input type="password" placeholder="e.g. 1234" maxLength={4} {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
+        <ScrollArea className="flex-grow pr-4 -mr-4">
+          <div className="space-y-6 py-2 pr-2">
+            {/* Worker Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Worker Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter worker name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Weekly Schedule</CardTitle>
-                        <CardDescription>Assign a shift for each day of the week.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
-                        {daysOfWeek.map(day => (
-                            <FormField
-                                key={day}
-                                control={form.control}
-                                name={`schedule.${day}`}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{day}</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select shift" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {shiftOptions.map((shift) => (
-                                                    <SelectItem key={shift} value={shift}>{shift}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        ))}
-                    </CardContent>
-                </Card>
+            {/* Role */}
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select worker role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Carer">Carer</SelectItem>
+                      <SelectItem value="Cook">Cook</SelectItem>
+                      <SelectItem value="Cleaner">Cleaner</SelectItem>
+                      <SelectItem value="Executive">Executive</SelectItem>
+                      <SelectItem value="Volunteer">Volunteer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="pin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>4-Digit PIN</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="e.g. 1234"
+                      maxLength={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  Weekly Shift Schedule
+                </CardTitle>
+                <CardDescription>
+                  Assign a shift for each day of the week.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {daysOfWeek.map((day) => (
+                  <FormField
+                    key={day}
+                    control={form.control}
+                    name={`schedule.${day}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{day}</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select shift" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {shiftOptions.map((shift) => (
+                              <SelectItem key={shift} value={shift}>
+                                {shift}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </CardContent>
+            </Card>
           </div>
         </ScrollArea>
 
         <div className="flex-shrink-0 pt-4 flex gap-4 justify-end border-t bg-background mt-auto">
-          <Button type="button" variant="outline" onClick={onCancel} className="w-full">Cancel</Button>
-          <Button type="submit" className="w-full">
-            Save Changes
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
           </Button>
+          <Button type="submit">Save Changes</Button>
         </div>
       </form>
     </Form>
