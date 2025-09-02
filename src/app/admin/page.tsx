@@ -12,7 +12,7 @@ import { daysOfWeek } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AddWorkerForm } from '@/components/add-worker-form';
+import AddWorkerForm from '@/components/add-worker-form';
 import EditWorkerForm from '@/components/edit-worker-form';
 import { PlusCircle, Users, LogOut, Edit, Trash2, Download, Loader2, ThumbsUp, ThumbsDown, History, Hourglass, QrCode, Sparkles as AiIcon } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -346,13 +346,11 @@ export default function AdminPage() {
                                     Add Worker
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+                            <DialogContent className="max-w-lg">
                                 <DialogHeader>
                                     <DialogTitle>Add a New Worker</DialogTitle>
                                 </DialogHeader>
-                                <div className="flex-grow overflow-hidden">
-                                   <AddWorkerForm onSubmit={handleAddWorker} workers={workers} />
-                                </div>
+                                <AddWorkerForm onSubmit={handleAddWorker} />
                             </DialogContent>
                         </Dialog>
                     </CardHeader>
@@ -363,11 +361,8 @@ export default function AdminPage() {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead className="sticky left-0 bg-card z-10 min-w-[150px]">Name</TableHead>
+                                            <TableHead>Email</TableHead>
                                             <TableHead>Role</TableHead>
-                                            <TableHead>PIN</TableHead>
-                                            {daysOfWeek.map(day => (
-                                                <TableHead key={day} className="min-w-[120px]">{day}</TableHead>
-                                            ))}
                                             <TableHead className="text-right sticky right-0 bg-card z-10 min-w-[100px]">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -375,13 +370,8 @@ export default function AdminPage() {
                                         {workers.map((worker) => (
                                             <TableRow key={worker.id}>
                                                 <TableCell className="font-medium sticky left-0 bg-card z-10">{worker.name}</TableCell>
+                                                <TableCell>{(worker as any).email}</TableCell>
                                                 <TableCell>{worker.role}</TableCell>
-                                                <TableCell>****</TableCell>
-                                                {daysOfWeek.map(day => (
-                                                    <TableCell key={day}>
-                                                        {worker.schedule ? <ShiftBadge shift={worker.schedule[day]} /> : '-'}
-                                                    </TableCell>
-                                                ))}
                                                 <TableCell className="text-right sticky right-0 bg-card z-10">
                                                     <div className="flex justify-end gap-2">
                                                         <Button variant="outline" size="icon" onClick={() => setEditingWorker(worker)}>
@@ -434,18 +424,15 @@ export default function AdminPage() {
 
             {editingWorker && (
                  <Dialog open={!!editingWorker} onOpenChange={(isOpen) => !isOpen && setEditingWorker(null)}>
-                    <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+                    <DialogContent className="max-w-lg">
                         <DialogHeader>
                             <DialogTitle>Edit Worker Details</DialogTitle>
                         </DialogHeader>
-                        <div className="flex-grow overflow-hidden">
-                            <EditWorkerForm
-                                worker={editingWorker}
-                                workers={workers}
-                                onSubmit={handleUpdateWorker}
-                                onCancel={() => setEditingWorker(null)}
-                            />
-                        </div>
+                        <EditWorkerForm
+                            worker={editingWorker}
+                            onSubmit={handleUpdateWorker}
+                            onCancel={() => setEditingWorker(null)}
+                        />
                     </DialogContent>
                 </Dialog>
             )}
@@ -526,3 +513,5 @@ const AttendanceTable = ({ records, onApproval }: AttendanceTableProps) => {
         </div>
     );
 };
+
+    

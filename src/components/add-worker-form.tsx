@@ -1,27 +1,26 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { useRef, useState, useEffect } from "react";
-
-import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormControl,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Worker, DayOfWeek, Shift } from "@/lib/types";
+import type { DayOfWeek, Shift } from "@/lib/types";
 import { daysOfWeek } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import type { Worker } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { ScrollArea } from "./ui/scroll-area";
-import { ArrowUp } from "lucide-react";
+
 
 const scheduleSchema = z.object(
   daysOfWeek.reduce((acc, day) => {
@@ -38,6 +37,7 @@ const formSchema = z.object({
   pin: z.string().length(4, "PIN must be exactly 4 digits.").regex(/^\d{4}$/, "PIN must be numeric."),
   schedule: scheduleSchema,
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -66,25 +66,6 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
     },
   });
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => {
-    const scrollEl = scrollRef.current?.querySelector("[data-radix-scroll-area-viewport]");
-    if (scrollEl) {
-      const handler = () => {
-        setShowScrollTop(scrollEl.scrollTop > 100);
-      };
-      scrollEl.addEventListener("scroll", handler);
-      return () => scrollEl.removeEventListener("scroll", handler);
-    }
-  }, []);
-
-  const handleScrollTop = () => {
-    const scrollEl = scrollRef.current?.querySelector("[data-radix-scroll-area-viewport]");
-    if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const handleSubmit = (data: FormValues) => {
     const isPinTaken = workers.some(w => w.pin === data.pin);
 
@@ -108,8 +89,8 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full relative">
-        <ScrollArea ref={scrollRef} className="flex-grow pr-6 -mr-6">
-            <div className="space-y-6 pb-6">
+        <ScrollArea className="flex-grow pr-6 -mr-6">
+            <div className="space-y-6 pb-20">
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Worker Details</CardTitle>
@@ -205,19 +186,9 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                 </Card>
             </div>
         </ScrollArea>
-        <div className="flex-shrink-0 pt-6 border-t">
+        <div className="sticky bottom-0 bg-card p-4 border-t">
             <Button type="submit" className="w-full" size="lg">Add Worker</Button>
         </div>
-        {showScrollTop && (
-            <Button
-            type="button"
-            size="icon"
-            onClick={handleScrollTop}
-            className="absolute bottom-20 right-4 rounded-full shadow-lg"
-            >
-            <ArrowUp className="h-5 w-5" />
-            </Button>
-        )}
       </form>
     </Form>
   );
