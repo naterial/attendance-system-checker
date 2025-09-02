@@ -1,9 +1,9 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Worker, DayOfWeek, Shift } from "@/lib/types";
+import type { Worker, DayOfWeek } from "@/lib/types";
 import { daysOfWeek } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -38,7 +38,6 @@ const formSchema = z.object({
   schedule: scheduleSchema,
 });
 
-
 type FormValues = z.infer<typeof formSchema>;
 
 interface EditWorkerFormProps {
@@ -48,29 +47,29 @@ interface EditWorkerFormProps {
     onCancel: () => void;
 }
 
-export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWorkerFormProps) {
+export default function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWorkerFormProps) {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: worker.name,
-      role: worker.role,
-      pin: worker.pin,
-      schedule: worker.schedule || {
-        Monday: "Morning",
-        Tuesday: "Morning",
-        Wednesday: "Morning",
-        Thursday: "Morning",
-        Friday: "Morning",
-        Saturday: "Off Day",
-        Sunday: "Off Day",
-      },
+        name: worker.name,
+        role: worker.role,
+        pin: worker.pin,
+        schedule: worker.schedule,
     },
   });
 
+  useEffect(() => {
+    form.reset({
+        name: worker.name,
+        role: worker.role,
+        pin: worker.pin,
+        schedule: worker.schedule,
+    });
+  }, [worker, form]);
+
   const handleSubmit = (data: FormValues) => {
-    // Check if the PIN is taken by *another* worker
-    const isPinTaken = workers.some(w => w.pin === data.pin && w.id !== worker.id);
+    const isPinTaken = workers.some(w => w.id !== worker.id && w.pin === data.pin);
 
     if (isPinTaken) {
       form.setError("pin", {
@@ -84,7 +83,8 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
       });
       return;
     }
-    onSubmit({ ...worker, ...data });
+
+    onSubmit({ id: worker.id, ...data });
   };
 
   return (
@@ -95,58 +95,58 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Worker Details</CardTitle>
-                        <CardDescription>Edit the worker's personal information.</CardDescription>
+                        <CardDescription>Update the worker's personal information.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder="e.g. Jane Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                        <FormField
-                        control={form.control}
-                        name="role"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Full Name</FormLabel>
                                 <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select worker role" />
-                                </SelectTrigger>
+                                    <Input placeholder="e.g. John Smith" {...field} />
                                 </FormControl>
-                                <SelectContent>
-                                <SelectItem value="Carer">Carer</SelectItem>
-                                <SelectItem value="Cook">Cook</SelectItem>
-                                <SelectItem value="Cleaner">Cleaner</SelectItem>
-                                <SelectItem value="Executive">Executive</SelectItem>
-                                <SelectItem value="Volunteer">Volunteer</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                            </FormItem>
-                        )}
+                                <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
-                        control={form.control}
-                        name="pin"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>4-Digit PIN</FormLabel>
-                            <FormControl>
-                                <Input type="password" placeholder="e.g. 1234" maxLength={4} {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="role"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Role</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select worker role" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    <SelectItem value="Carer">Carer</SelectItem>
+                                    <SelectItem value="Cook">Cook</SelectItem>
+                                    <SelectItem value="Cleaner">Cleaner</SelectItem>
+                                    <SelectItem value="Executive">Executive</SelectItem>
+                                    <SelectItem value="Volunteer">Volunteer</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="pin"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>4-Digit PIN</FormLabel>
+                                <FormControl>
+                                    <Input type="password" placeholder="e.g. 1234" maxLength={4} {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
                         />
                     </CardContent>
                 </Card>
@@ -154,7 +154,7 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Weekly Schedule</CardTitle>
-                        <CardDescription>Assign a shift for each day of the week.</CardDescription>
+                        <CardDescription>Update the shift for each day of the week.</CardDescription>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                         {daysOfWeek.map(day => (
@@ -169,7 +169,7 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select shift" />
-                                                </Trigger>
+                                                </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="Morning">Morning</SelectItem>
@@ -187,9 +187,10 @@ export function EditWorkerForm({ worker, workers, onSubmit, onCancel }: EditWork
                 </Card>
             </div>
         </ScrollArea>
-        <div className="flex justify-end gap-2 pt-6 flex-shrink-0">
-            <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
-            <Button type="submit">Save Changes</Button>
+        
+        <div className="pt-6 flex-shrink-0 flex gap-4">
+            <Button type="button" variant="outline" onClick={onCancel} className="w-full">Cancel</Button>
+            <Button type="submit" className="w-full">Save Changes</Button>
         </div>
       </form>
     </Form>

@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AddWorkerForm } from '@/components/add-worker-form';
-import { EditWorkerForm } from '@/components/edit-worker-form';
+import EditWorkerForm from '@/components/edit-worker-form';
 import { PlusCircle, Users, LogOut, Edit, Trash2, Download, Loader2, ThumbsUp, ThumbsDown, History, Hourglass, QrCode, Sparkles as AiIcon } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
