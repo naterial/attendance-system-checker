@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import type { Worker } from "@/lib/types";
 
 // Validation schema
 const WorkerSchema = z.object({
@@ -27,7 +27,7 @@ type WorkerFormData = z.infer<typeof WorkerSchema>;
 export default function AddWorkerForm({
   onSubmit,
 }: {
-  onSubmit: (data: WorkerFormData) => void;
+  onSubmit: (data: Omit<Worker, 'id' | 'pin' | 'schedule'>) => void;
 }) {
   const form = useForm<WorkerFormData>({
     resolver: zodResolver(WorkerSchema),
@@ -68,20 +68,9 @@ export default function AddWorkerForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select worker role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Carer">Carer</SelectItem>
-                        <SelectItem value="Cook">Cook</SelectItem>
-                        <SelectItem value="Cleaner">Cleaner</SelectItem>
-                        <SelectItem value="Executive">Executive</SelectItem>
-                        <SelectItem value="Volunteer">Volunteer</SelectItem>
-                      </SelectContent>
-                    </Select>
+                   <FormControl>
+                    <Input placeholder="e.g. Carer, Cook" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
