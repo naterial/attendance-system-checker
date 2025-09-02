@@ -84,3 +84,5 @@ export const updateAttendanceStatus = async (id: string, status: 'approved' | 'r
     const recordRef = doc(db, 'attendanceRecords', id);
     await updateDoc(recordRef, { status });
 };
+
+    
