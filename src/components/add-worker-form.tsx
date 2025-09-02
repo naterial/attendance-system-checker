@@ -14,23 +14,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { DayOfWeek, Shift } from "@/lib/types";
-import { daysOfWeek } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import type { Worker } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { daysOfWeek, DayOfWeek } from "@/lib/types";
 
-
+// Validation schema
 const scheduleSchema = z.object(
   daysOfWeek.reduce((acc, day) => {
-    acc[day] = z.enum(["Morning", "Afternoon", "Night", "Off Day"], { required_error: `Please select a shift for ${day}.`});
+    acc[day] = z.enum(["Morning", "Afternoon", "Night", "Off Day"], { required_error: `Please select a shift for ${day}.` });
     return acc;
   }, {} as Record<DayOfWeek, z.ZodEnum<["Morning", "Afternoon", "Night", "Off Day"]>>)
 );
 
-const formSchema = z.object({
+const workerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters.").max(50),
+  email: z.string().email("Invalid email address."),
   role: z.enum(["Carer", "Cook", "Cleaner", "Executive", "Volunteer"], {
     required_error: "Please select a role.",
   }),
@@ -38,20 +44,20 @@ const formSchema = z.object({
   schedule: scheduleSchema,
 });
 
+type WorkerFormData = z.infer<typeof workerSchema>;
 
-type FormValues = z.infer<typeof formSchema>;
-
-interface AddWorkerFormProps {
-    onSubmit: (data: Omit<Worker, 'id'>) => void;
-    workers: Worker[];
-}
-
-export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
-  const { toast } = useToast();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+export default function AddWorkerForm({
+  onSubmit,
+  workers,
+}: {
+  onSubmit: (data: Omit<Worker, "id">) => void;
+  workers: Worker[];
+}) {
+  const form = useForm<WorkerFormData>({
+    resolver: zodResolver(workerSchema),
     defaultValues: {
       name: "",
+      email: "",
       role: undefined,
       pin: "",
       schedule: {
@@ -62,13 +68,14 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
         Friday: "Morning",
         Saturday: "Off Day",
         Sunday: "Off Day",
-      }
+      },
     },
   });
 
-  const handleSubmit = (data: FormValues) => {
-    const isPinTaken = workers.some(w => w.pin === data.pin);
+  const { toast } = useToast();
 
+  const handleSubmit = (data: WorkerFormData) => {
+    const isPinTaken = workers.some((w) => w.pin === data.pin);
     if (isPinTaken) {
       form.setError("pin", {
         type: "manual",
@@ -81,8 +88,7 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
       });
       return;
     }
-
-    onSubmit(data as Omit<Worker, 'id'>);
+    onSubmit(data as Omit<Worker, "id">);
     form.reset();
   };
 
@@ -94,9 +100,9 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">Worker Details</CardTitle>
-                        <CardDescription>Enter the worker's personal information.</CardDescription>
+                        <CardDescription>Enter the worker's personal and security information.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                             control={form.control}
                             name="name"
@@ -105,6 +111,19 @@ export function AddWorkerForm({ onSubmit, workers }: AddWorkerFormProps) {
                                 <FormLabel>Full Name</FormLabel>
                                 <FormControl>
                                     <Input placeholder="e.g. John Smith" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Email Address</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g. j.smith@example.com" {...field} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
